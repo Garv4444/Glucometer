@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:glucometer/screens/about.dart';
 
 import 'constants.dart';
 import 'screens/input_screen.dart';
@@ -28,8 +29,9 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: Input.id,
       routes: <String, WidgetBuilder>{
-        Input.id: (BuildContext context) => Input(),
-        Results.id: (BuildContext context) => Results()
+        Input.id: (BuildContext context) => const Input(),
+        Results.id: (BuildContext context) => const Results(),
+        About.id: (BuildContext context) => const About()
       },
     );
   }

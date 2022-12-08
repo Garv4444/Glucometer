@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:glucometer/constants.dart';
+import 'package:glucometer/screens/about.dart';
 
 import 'result.dart';
 
@@ -12,6 +13,32 @@ class Input extends StatefulWidget {
 }
 
 class _InputState extends State<Input> {
+  Color currColor = kSecondaryColour;
+  static const String fast = "Fasting";
+  static const String pp = "Postprandial";
+  String current = pp;
+  void handleClick(String value) {
+    switch (value) {
+      case '$fast mode':
+        setState(() {
+          current = fast;
+          currColor = kFastSecondaryColour;
+          Results.setCurrent(true);
+        });
+        break;
+      case '$pp mode':
+        setState(() {
+          current = pp;
+          currColor = kSecondaryColour;
+          Results.setCurrent(false);
+        });
+        break;
+      case 'About':
+        Navigator.pushNamed(context, About.id);
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -21,10 +48,25 @@ class _InputState extends State<Input> {
       child: Scaffold(
         appBar: AppBar(
           title: const Center(
-              child: Text(
-            'SUCRE',
-            style: TextStyle(fontSize: 25),
-          )),
+            child: Text(
+              '     SUCRE',
+              style: TextStyle(fontSize: 25),
+            ),
+          ),
+          actions: [
+            PopupMenuButton<String>(
+              onSelected: handleClick,
+              itemBuilder: (BuildContext context) {
+                return {'${current == pp ? fast : pp} mode', 'About'}
+                    .map((String choice) {
+                  return PopupMenuItem<String>(
+                    value: choice,
+                    child: Text(choice),
+                  );
+                }).toList();
+              },
+            ),
+          ],
         ),
         body: Column(
           children: [
@@ -34,20 +76,24 @@ class _InputState extends State<Input> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Center(
-                    child: Text(
-                      'CHECK SUGAR LEVEL',
-                      style: kTitleStyle.copyWith(fontSize: 25),
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(40, 0, 40, 0),
+                      child: Text(
+                        'CHECK ${current.toUpperCase()} SUGAR LEVEL',
+                        style: kTitleStyle.copyWith(fontSize: 25),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                   ),
                   SizedBox.fromSize(
-                    size: const Size(0, 50),
+                    size: const Size(0, 75),
                   ),
                   SizedBox(
                     width: 300,
                     height: 50,
                     child: TextField(
                       textAlign: TextAlign.center,
-                      cursorColor: kSecondaryColour,
+                      cursorColor: currColor,
                       cursorWidth: 2,
                       cursorHeight: 30,
                       decoration: InputDecoration(
@@ -78,6 +124,8 @@ class _InputState extends State<Input> {
                     size: const Size(0, 20),
                   ),
                   TextButton(
+                    style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all(currColor)),
                     onPressed: () {
                       Navigator.pushNamed(context, Results.id);
                     },
@@ -94,7 +142,7 @@ class _InputState extends State<Input> {
             ),
             Container(
               margin: const EdgeInsets.only(top: 10),
-              color: kSecondaryColour,
+              color: currColor,
               width: double.infinity,
               height: 70,
               child: GestureDetector(

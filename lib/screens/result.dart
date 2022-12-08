@@ -3,16 +3,24 @@ import 'package:glucometer/constants.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 class Results extends StatefulWidget {
+  static void setCurrent(bool type) {
+    _ResultsState.current =
+        type ? _ResultsState.fastValues : _ResultsState.ppValues;
+  }
+
+  static bool type = false;
   static const String id = "result";
   static double value = 0;
   const Results({Key? key}) : super(key: key);
-
   @override
   State<Results> createState() => _ResultsState();
 }
 
 class _ResultsState extends State<Results> {
   double value = Results.value;
+  static const List<double> fastValues = [100, 125, 200];
+  static const List<double> ppValues = [140, 200, 300];
+  static List<double> current = ppValues;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,11 +34,11 @@ class _ResultsState extends State<Results> {
               style: kTitleStyle.copyWith(fontSize: 50),
             ),
             Text(
-              '$value mg/dL\n',
+              '${value.toStringAsFixed(0)} mg/dL\n',
               style: kTitleStyle.copyWith(fontSize: 40),
             ),
             Text(
-              '${message(value)}\n',
+              '${message(value, current)}\n',
               style: kTitleStyle.copyWith(fontSize: 20),
             ),
             Padding(
@@ -41,9 +49,12 @@ class _ResultsState extends State<Results> {
                 onGenerateLabels: () {
                   return <LinearAxisLabel>[
                     const LinearAxisLabel(text: '0', value: 0),
-                    const LinearAxisLabel(text: '140', value: 140),
-                    const LinearAxisLabel(text: '200', value: 200),
-                    const LinearAxisLabel(text: '300', value: 300),
+                    LinearAxisLabel(
+                        text: current[0].toStringAsFixed(0), value: current[0]),
+                    LinearAxisLabel(
+                        text: current[1].toStringAsFixed(0), value: current[1]),
+                    LinearAxisLabel(
+                        text: current[2].toStringAsFixed(0), value: current[2]),
                   ];
                 },
                 markerPointers: <LinearMarkerPointer>[
@@ -57,9 +68,9 @@ class _ResultsState extends State<Results> {
                   ),
                 ],
                 minimum: 0,
-                maximum: 300,
+                maximum: current[2],
                 useRangeColorForAxis: true,
-                ranges: const [
+                ranges: [
                   LinearGaugeRange(
                     rangeShapeType: LinearRangeShapeType.curve,
                     position: LinearElementPosition.cross,
@@ -68,7 +79,7 @@ class _ResultsState extends State<Results> {
                     midWidth: 16,
                     endWidth: 16,
                     startValue: 0,
-                    endValue: 140,
+                    endValue: current[0],
                     color: Colors.green,
                   ),
                   LinearGaugeRange(
@@ -77,8 +88,8 @@ class _ResultsState extends State<Results> {
                     startWidth: 16,
                     midWidth: 16,
                     endWidth: 16,
-                    startValue: 140,
-                    endValue: 200,
+                    startValue: current[0],
+                    endValue: current[1],
                     color: Colors.yellow,
                   ),
                   LinearGaugeRange(
@@ -88,8 +99,8 @@ class _ResultsState extends State<Results> {
                     startWidth: 16,
                     midWidth: 16,
                     endWidth: 16,
-                    startValue: 200,
-                    endValue: 300,
+                    startValue: current[1],
+                    endValue: current[2],
                     color: Colors.red,
                   )
                 ],
@@ -111,10 +122,10 @@ class _ResultsState extends State<Results> {
   }
 }
 
-String message(double value) {
-  if (value <= 140) {
+String message(double value, List<double> current) {
+  if (value <= current[0]) {
     return "Your blood sugar is normal";
-  } else if (value <= 200) {
+  } else if (value <= current[1]) {
     return "You are Pre-Diabetic";
   } else {
     return "You are Diabetic";
