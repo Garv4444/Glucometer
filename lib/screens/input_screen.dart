@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:glucometer/constants.dart';
 import 'package:glucometer/screens/about.dart';
-
+import 'package:glucometer/screens/ble_connection.dart';
 import 'result.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Input extends StatefulWidget {
   static const String id = "input_screen";
@@ -17,6 +18,7 @@ class _InputState extends State<Input> {
   static const String fast = "Fasting";
   static const String pp = "Postprandial";
   String current = pp;
+
   void handleClick(String value) {
     switch (value) {
       case '$fast mode':
@@ -35,6 +37,9 @@ class _InputState extends State<Input> {
         break;
       case 'About':
         Navigator.pushNamed(context, About.id);
+        break;
+      case 'Connect Bluetooth':
+        Navigator.pushNamed(context, Helper.id);
         break;
     }
   }
@@ -57,7 +62,7 @@ class _InputState extends State<Input> {
             PopupMenuButton<String>(
               onSelected: handleClick,
               itemBuilder: (BuildContext context) {
-                return {'${current == pp ? fast : pp} mode', 'About'}
+                return {'${current == pp ? fast : pp} mode','Connect Bluetooth', 'About'}
                     .map((String choice) {
                   return PopupMenuItem<String>(
                     value: choice,
@@ -147,7 +152,7 @@ class _InputState extends State<Input> {
               height: 70,
               child: GestureDetector(
                 onTap: () {
-                  //Navigator.pushNamed(context, Results.id);
+                  Navigator.pushNamed(context, Helper.id);
                 },
                 child: const Center(
                     child: Text(
